@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Replacement Algorithm Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="header-glow"></div>
+        <div class="container header-content">
+            <div class="brand-row">
+                <div class="brand-mark" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                </div>
+                <div>
+                    <div class="eyebrow">OPERATING SYSTEMS • MINI PROJECT</div>
+                    <h1>Page Replacement <span>Simulator</span></h1>
+                    <p>Visualize how memory pages are loaded, replaced, and compared.</p>
+                </div>
+            </div>
+            <div class="header-badge">FIFO + OPTIMAL</div>
+        </div>
+    </header>
+
+    <main class="container main-content">
+
+        <section class="hero-card">
+            <div class="hero-copy">
+                <span class="section-kicker">MEMORY MANAGEMENT</span>
+                <h2>Understand page replacement through simulation.</h2>
+                <p>
+                    Enter a page reference string and the number of page frames.
+                    The simulator processes every request and shows exactly what happens
+                    inside memory at each step.
+                </p>
+                <div class="hero-points">
+                    <span>✓ Step-by-step simulation</span>
+                    <span>✓ Page hits & faults</span>
+                    <span>✓ Algorithm comparison</span>
+                </div>
+            </div>
+
+            <div class="memory-visual" aria-label="Illustration of page frames">
+                <div class="memory-label">PHYSICAL MEMORY</div>
+                <div class="memory-stack">
+                    <div class="memory-slot"><small>FRAME 03</small><strong>01</strong></div>
+                    <div class="memory-slot"><small>FRAME 02</small><strong>07</strong></div>
+                    <div class="memory-slot active"><small>FRAME 01</small><strong>02</strong></div>
+                </div>
+                <div class="memory-status"><span></span> Page frame allocation</div>
+            </div>
+        </section>
+
+        <section class="algorithm-grid">
+            <article class="algorithm-card fifo-card">
+                <div class="algorithm-icon">01</div>
+                <div class="algorithm-content">
+                    <div class="card-label">FIRST IN • FIRST OUT</div>
+                    <h3>FIFO</h3>
+                    <p>Replaces the page that has been in memory for the longest time.</p>
+                    <div class="algorithm-rule">
+                        <span>Rule</span>
+                        <strong>Oldest page leaves first</strong>
+                    </div>
+                </div>
+            </article>
+
+            <article class="algorithm-card optimal-card">
+                <div class="algorithm-icon">02</div>
+                <div class="algorithm-content">
+                    <div class="card-label">FUTURE-AWARE</div>
+                    <h3>Optimal</h3>
+                    <p>Replaces the page whose next use is farthest in the future.</p>
+                    <div class="algorithm-rule">
+                        <span>Rule</span>
+                        <strong>Farthest future use leaves first</strong>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="workspace-card">
+            <div class="section-heading">
+                <div>
+                    <span class="section-kicker">SIMULATION SETUP</span>
+                    <h2>Configure your memory scenario</h2>
+                    <p>Choose the reference sequence and number of available frames.</p>
+                </div>
+                <div class="step-badge">STEP 01</div>
+            </div>
+
+            <div class="input-grid">
+                <div class="input-group input-wide">
+                    <label for="referenceString">
+                        <span>Page Reference String</span>
+                        <small>Required</small>
+                    </label>
+                    <div class="input-wrap">
+                        <span class="input-icon">↗</span>
+                        <input id="referenceString" type="text"
+                               placeholder="7 0 1 2 0 3 0 4 2 3 0 3"
+                               autocomplete="off">
+                    </div>
+                    <div class="field-help">Separate page numbers using spaces or commas.</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="frameCount">
+                        <span>Page Frames</span>
+                        <small>1–20</small>
+                    </label>
+                    <div class="input-wrap">
+                        <span class="input-icon">▦</span>
+                        <input id="frameCount" type="number" min="1" max="20"
+                               placeholder="3">
+                    </div>
+                    <div class="field-help">Number of pages that can stay in memory.</div>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error-message" role="alert"></div>
+
+            <div class="action-row">
+                <button id="fifoBtn" class="btn btn-fifo" type="button">
+                    <span>Run FIFO</span><b>→</b>
+                </button>
+                <button id="optimalBtn" class="btn btn-optimal" type="button">
+                    <span>Run Optimal</span><b>→</b>
+                </button>
+                <button id="compareBtn" class="btn btn-compare" type="button">
+                    <span>Compare Both</span><b>↔</b>
+                </button>
+                <button id="resetBtn" class="btn btn-reset" type="button">
+                    <span>Reset</span><b>×</b>
+                </button>
+            </div>
+
+            <div class="input-tip">
+                <span class="tip-dot"></span>
+                <span>Try the sample above with <strong>3 frames</strong> to see the difference between FIFO and Optimal.</span>
+            </div>
+        </section>
+
+        <section id="resultsSection" class="results-section">
+
+            <div class="results-title-row">
+                <div>
+                    <span class="section-kicker">SIMULATION OUTPUT</span>
+                    <h2>Memory activity</h2>
+                    <p>Every reference is shown in sequence, including the resulting memory state.</p>
+                </div>
+                <div class="live-indicator"><span></span> Simulation ready</div>
+            </div>
+
+            <div id="summaryCards" class="summary-grid"></div>
+
+            <article id="fifoResult" class="result-card" style="display:none;">
+                <div class="result-header">
+                    <div>
+                        <span class="mini-label blue">ALGORITHM 01</span>
+                        <h3>FIFO Page Replacement</h3>
+                    </div>
+                    <div class="result-pill blue-pill">First In • First Out</div>
+                </div>
+                <div id="fifoSummary"></div>
+                <div class="table-heading">
+                    <div><strong>Replacement trace</strong><span>Memory state after each request</span></div>
+                    <span class="table-note">Scroll horizontally if needed</span>
+                </div>
+                <div class="table-container">
+                    <table id="fifoTable">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article id="optimalResult" class="result-card" style="display:none;">
+                <div class="result-header">
+                    <div>
+                        <span class="mini-label green">ALGORITHM 02</span>
+                        <h3>Optimal Page Replacement</h3>
+                    </div>
+                    <div class="result-pill green-pill">Future-aware</div>
+                </div>
+                <div id="optimalSummary"></div>
+                <div class="table-heading">
+                    <div><strong>Replacement trace</strong><span>Memory state after each request</span></div>
+                    <span class="table-note">Scroll horizontally if needed</span>
+                </div>
+                <div class="table-container">
+                    <table id="optimalTable">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article id="comparisonSection" class="comparison-section" style="display:none;">
+                <div class="comparison-header">
+                    <div>
+                        <span class="section-kicker">PERFORMANCE REVIEW</span>
+                        <h3>FIFO vs Optimal</h3>
+                        <p>Compare the two algorithms using the same reference string.</p>
+                    </div>
+                    <div class="compare-badge">SIDE-BY-SIDE</div>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-card fifo-comparison">
+                        <div class="comparison-card-top">
+                            <span class="compare-number">01</span>
+                            <span class="result-pill blue-pill">FIFO</span>
+                        </div>
+                        <h4>First In, First Out</h4>
+                        <div class="comparison-values">
+                            <div class="comparison-value">
+                                <span id="compareFifoFaults">0</span>
+                                <small>Page Faults</small>
+                            </div>
+                            <div class="comparison-value">
+                                <span id="compareFifoHits">0</span>
+                                <small>Page Hits</small>
+                            </div>
+                            <div class="comparison-value">
+                                <span id="compareFifoPercentage">0%</span>
+                                <small>Fault Rate</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comparison-card optimal-comparison">
+                        <div class="comparison-card-top">
+                            <span class="compare-number">02</span>
+                            <span class="result-pill green-pill">OPTIMAL</span>
+                        </div>
+                        <h4>Optimal Replacement</h4>
+                        <div class="comparison-values">
+                            <div class="comparison-value">
+                                <span id="compareOptimalFaults">0</span>
+                                <small>Page Faults</small>
+                            </div>
+                            <div class="comparison-value">
+                                <span id="compareOptimalHits">0</span>
+                                <small>Page Hits</small>
+                            </div>
+                            <div class="comparison-value">
+                                <span id="compareOptimalPercentage">0%</span>
+                                <small>Fault Rate</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="comparisonMessage" class="comparison-message">
+                    Run the comparison to see which algorithm performs better.
+                </div>
+            </article>
+        </section>
+
+        <section class="learning-section">
+            <div class="section-heading compact">
+                <div>
+                    <span class="section-kicker">QUICK CONCEPT GUIDE</span>
+                    <h2>What is happening inside memory?</h2>
+                </div>
+            </div>
+
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <span class="concept-icon">01</span>
+                    <h3>Page</h3>
+                    <p>A fixed-size block of a process's virtual memory.</p>
+                </div>
+                <div class="concept-card">
+                    <span class="concept-icon">02</span>
+                    <h3>Page Frame</h3>
+                    <p>A fixed-size block of physical memory used to hold a page.</p>
+                </div>
+                <div class="concept-card">
+                    <span class="concept-icon">03</span>
+                    <h3>Page Hit</h3>
+                    <p>The requested page is already available in a memory frame.</p>
+                </div>
+                <div class="concept-card">
+                    <span class="concept-icon">04</span>
+                    <h3>Page Fault</h3>
+                    <p>The requested page is missing and must be loaded into memory.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong>Simple Page Replacement Algorithm Simulator</strong>
+                <span>Operating Systems Mini Project</span>
+            </div>
+            <div class="footer-tech">HTML • CSS • Vanilla JavaScript</div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
